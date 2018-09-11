@@ -1,2 +1,2 @@
 # Traffic-Detection
-idk, just object detection to detect traffic jams using opencv tensorflow (maybe) keras. Maybe i'll build an app with google maps api idk
+Phần mềm phân loại hình ảnh sử dụng Keras và OpenCV trên ngôn ngữ Python để phân loại xem tuyến đường có kẹt xe hay không.
