@@ -14,7 +14,7 @@ Phần mềm phân loại hình ảnh sử dụng Keras và OpenCV trên ngôn n
   - keras
   - opencv
  
-### Mạng lưới CNN/ ConvNeural Net và giả thiết xây dựng một CNN để nhận biết kẹt xe.
+### Xây một mạng lưới CNN/ ConvNeural Net và giả thiết xây dựng một CNN để nhận biết kẹt xe.
   CNN là mạng lưới/ thuật toán gồm các neuron và các bước xử lý hình ảnh để máy tính có thể phân loại hình ảnh. Ngoài ra, CNN còn được áp dụng trong các thuật toán nhận biết đồ vật (Object-detection) để phân loại đồ vật.
   CNN được cấu tạo từ nhiều lớp khác nhau, trong đó, 3 lớp cơ bản và cần thiết nhất để hình thành một cấu trúc CNN là:
   
@@ -67,6 +67,95 @@ Phần mềm phân loại hình ảnh sử dụng Keras và OpenCV trên ngôn n
   ```
   
   Với thủ tục trên, ta có label là "traffic" hoặc "road", mypath là địa chỉ folder giữ ảnh, img_num là để đếm ảnh và thêm chỉ số đếm vào tên. Như vậy, ta sẽ có:
+  
+  ![Screenshot](https://github.com/TsoiPhu/Traffic-Detection/blob/master/README%20images/Screenshot%20from%202018-09-16%2022-35-47.png)
+  
+  Tương tự cho folder giữ ảnh kẹt xe:
+  
+  ![Screenshot](https://github.com/TsoiPhu/Traffic-Detection/blob/master/README%20images/Screenshot%20from%202018-09-16%2022-43-28.png)
+  
+  
+  
+  
+  -Bước 3: Tiền xử lý hình ảnh
+  
+  Như đã nói ở trên, do giới hạn nghiên cứu và khả năng xử lý của máy tính mình, ta cần các bước xử lý hình ảnh trước khi train để bộ nhớ tạm thời (RAM) của máy mình chứa nổi và CPU của mình tính toán trong thời gian hợp lý. Để vậy, ta chọn xử lý độ phân giải và màu của hình ảnh. Sau một hồi thử nghiệm giới hạn của máy, mình đã chọn được độ phản giải thích hợp nhất là 80x80, và chúng ta sẽ loại màu ra khỏi ảnh vì thứ nhất màu không cần thiết để nhận biết và phân loại kẹt xe, hai là nếu thêm màu vào, hình ảnh của chúng ta sẽ cần được biểu diễn dưới dạng mảng/ma trận ba chiều, rất tốn kém. Như vậy, ta có dữ liệu ảnh cuối cùng là [80x80x1] với 80x80 là độ phân giải, 1 là Grayscale channel, hay còn gọi là trắng đen. Ta sẽ thực hiện dòng code sau trong chương trình chính ori2.py :
+  
+  ```
+  def get_traindata():
+    img_num=0
+    for n in os.listdir(mypath):
+        try:
+            img_num+=1
+            path=os.path.join(mypath,n)
+            img=cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+            img=cv2.resize(img, (img_rows,img_cols))
+            x_train.append(np.array(img))
+            y_train.append(label(n))
+        except Exception as e:
+            print(str(e))
+            
+  ```
+  
+  
+  Ta có, mypath là địa chỉ folder nhét 1300 hình ảnh để train, imread GRAYSCALE để đọc hình ảnh dưới dạng trắng đen, resize để chỉnh hình ảnh xuống độ phân giải thích hợp ( ở đây độ phân giải được khai báo dưới biến img_rows, img_cols). Sau đó, ảnh sẽ được ép vào một list trong python và được chuyển hoá thành dạng mảng bằng thư viện numpy qua dòng x_train.append(np.array(img)).
+  
+  -Bước 4: Cấu trúc CNN
+  
+  ```
+  model=Sequential()
+model.add(Conv2D(32, kernel_size=(3, 3),
+                 activation='relu',
+                 input_shape=input_shape))
+model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(filters=32,kernel_size=3,strides=1,padding='same',activation='relu'))
+model.add(MaxPooling2D(pool_size=5,padding='same'))
+model.add(Conv2D(filters=32,kernel_size=3,strides=1,padding='same',activation='relu'))
+model.add(MaxPooling2D(pool_size=5,padding='same'))
+model.add(Dropout(0.25))
+model.add(Flatten())
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(2, activation='softmax'))
+
+  ```
+  
+  Ở trên là cấu trúc CNN của mình được hỗ trợ bởi thư viện Keras, ta bắt đầu cấu trúc bằng dòng Sequential(). Sau đó, cấu trúc sẽ có dạng :
+  
+  ```
+  (INPUT - CONVLAYER(32 filters 3x3) - CONVLAYER(64 filters 3x3) -  MAXPOOL - CONVLAYER(32 filters 3x3) - MAXPOOL - CONVLAYER(32 filters 3x3) - MAXPOOL - Dropout - Dense - Dropout - Dense)
+  
+  ```
+  
+  ![Screenshot](https://github.com/TsoiPhu/Traffic-Detection/blob/master/README%20images/Screenshot%20from%202018-09-16%2023-12-20.png)
+  
+  - Bước 5: Train cấu trúc
+  
+  Sau khi đã chuẩn bị xong dữ liệu, đưa các bước xử lý hình ảnh, và hoàn chỉnh một cấu trúc CNN, ta cho cấu trúc train dữ liệu trên bằng cách chạy bản thử ori2.py. Ta sẽ cho mạng lưới tự học với các chỉ số sau:
+  
+  - epoch: Train 15 epochs, với mỗi epoch, mạng lưới sẽ chạy qua bộ dữ liệu train 1300 bức ảnh và tự điều chỉnh chính nó, ở cuối một epoch, nó sẽ test độ chính xác cấu trúc vào bộ test. Ta có thể hiểu 1 epoch như một chu kỳ.
+  
+  - Batch_size: batch_size của mình cũng sẽ là 15, tức là, cứ mỗi 15 bức ảnh, nó sẽ lấy dữ liệu của 15 bức ảnh đó, tự học và thay đổi các parameters và các chỉ số bên trong mạng lưới để tăng độ chính xác.
+  
+  Cuỗi cùng, chúng ta sẽ có loạt kết quả sau và cấu trúc hoàn chỉnh khi chạy ori2.py:
+  
+  ![Screenshot](https://github.com/TsoiPhu/Traffic-Detection/blob/master/README%20images/Screenshot%20from%202018-09-16%2023-31-40.png)
+  
+  Ta thấy, ở epoch thứ 15, ta có kết quả phân loại trên bộ train là 94% (acc), trên bộ test là 96% (val_acc). Nhưng, mục đích chính của nghiên cứu trí tuệ nhân tạo không phải là tối ưu độ chính xác mà là tối thiểu độ sai lệch (loss). Loss là chỉ số khác nhau giữa *dự đoán* phân loại và thực tế, không nên nhầm lẫn với độ chính xác phân loại so với thực tế, nếu nhìn qua kết quả, ta rút ra được rằng kết quả loss của chúng ta còn quá lớn, đến những 10-20%, cho nên mặc dù rất có triển vọng, ta cần phải hiểu rằng CNN vẫn có thể tối ưu được bằng những cách như chuẩn bị bộ dữ liệu lớn hơn, tối ưu cấu trúc bằng toán học hơn là thử nghiệm, có bộ vi xử lý mạnh hơn để tăng cường sức xử lý của máy tính, v.v..
+  
+  
+  
+  - Bước 6: Test trên các dữ liệu thực tế:
+  Sau khi xong tất cả, mình đã chọn ra các hình ảnh không có trong bộ dữ liệu để test CNN
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   
