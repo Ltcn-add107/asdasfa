@@ -6,15 +6,15 @@ Phần mềm phân loại hình ảnh sử dụng Keras và OpenCV trên ngôn n
 
 
 
-### I. Nghiên cứu và áp dụng công nghệ phân loại hình ảnh (Image-classifier) sử dụng Python và thư viện máy học Keras.
+## I. Nghiên cứu và áp dụng công nghệ phân loại hình ảnh (Image-classifier) sử dụng Python và thư viện máy học Keras.
 
-#### Các thư viện cần thiết (Dependencies)
+### Các thư viện cần thiết (Dependencies)
   - numpy
   - tensorflow
   - keras
   - opencv
  
-#### Mạng lưới CNN/ ConvNeural Net và giả thiết xây dựng một CNN để nhận biết kẹt xe.
+### Mạng lưới CNN/ ConvNeural Net và giả thiết xây dựng một CNN để nhận biết kẹt xe.
   CNN là mạng lưới/ thuật toán gồm các neuron và các bước xử lý hình ảnh để máy tính có thể phân loại hình ảnh. Ngoài ra, CNN còn được áp dụng trong các thuật toán nhận biết đồ vật (Object-detection) để phân loại đồ vật.
   CNN được cấu tạo từ nhiều lớp khác nhau, trong đó, 3 lớp cơ bản và cần thiết nhất để hình thành một cấu trúc CNN là:
   
@@ -40,7 +40,35 @@ Phần mềm phân loại hình ảnh sử dụng Keras và OpenCV trên ngôn n
   
   **Dense:**
   
-  -
+  - Là loại lớp cuối cùng trong cấu trúc CNN. Dense, như tên gọi, sẽ kết nối đặc tất cả các neuron ở lớp này với lớp tiếp theo. Làm như thế sẽ tăng sức chứa và độ chính xác của model này tăng mạnh, bởi vì có càng nhiều liên kết giữa các neuron sẽ càng có nhiều cách để miêu tả được dữ liệu nhập vào mạng lưới và đồng nghĩa bước phân loại cuối cùng sẽ chi tiết hơn. Nhưng, các cấu trúc CNN rất thường gặp trường hợp overfitting, do được nhận quá nhiều dữ liệu không liên quan trong hình ảnh có thể ảnh hưởng rất lớn đên khả năng phân loại sau này. Vì thế, chúng ta cần thêm bước Dropout, loại bỏ các liên kết ngẫu nhiên trong mạng lưới để tránh các lỗi không mong muốn.
+  
+  ### Data:
+  
+  Muốn xây dựng một mạng lưới CNN nói riêng, hay muốn xây dựng bất kì neural network nào, bước đầu tiên luôn luôn là chuẩn bị dữ liệu. Do CNN là một mạng lưới tự học và tự động phân loại hình ảnh, nên chúng ta phải luyện cho nó cách phân loại bằng cách chọn lọc một cơ sở dữ liệu gồm rất nhiều hình ảnh và đối tượng cần phân loại tự động, gắn mác nó, và cho nó vào mạng lưới dưới dạng input được xử lý, phương pháp này gọi là supervised learning, ta cho vào một lượng input cực lớn được gắn mác, và mạng lưới sẽ cho ta cấu trúc tự học của nó dùng để phân loại hình ảnh. Bộ dữ liệu của chúng ta sẽ chia làm hai phần, phần test và phần train. Phần train sẽ là phần đảm nhiệm phần lớn dữ liệu, đây sẽ là input được gắn mác hình nào là kẹt xe, hình nào là không, để mạng lưới có thể học và phân loại. Sau mỗi lần train xong, mạng lưới sẽ nhận tiếp một bộ dữ liệu nhỏ hơn gọi là phần test, các bức ảnh trong phần này không được gắn mác, nên muốn biết hình nào là kẹt xe, mạng lưới phải sử dụng cấu trúc tự học mà nó đã xây dựng trong phần train để phân loại hình ảnh, từ đó, ta đo độ chính xác của mạng lưới.
+  
+  Khái quát qua cách chọn dữ liệu, mình đã tiến hành chọn lọc và gắn mác dữ liệu qua các buớc sau đây:
+  
+  - Bước 1: Download dữ liệu
+  
+  Ta gặp vấn đề đầu tiên, làm sao để có được lượng lớn cỡ 700-1000 hình ảnh chọn lọc về kẹt xe. Giải pháp của ta là các cơ sở dữ liệu online được tạo ra để phục vụ cho các mục đích nghiên cứu trí tuệ nhân tạo và khoa học dữ liệu lớn. Mình đã chọn ImageNet làm cơ sở để download hình ảnh không kẹt xe (đúng hơn là đường xá). Nhưng do các hình ảnh chuyên biệt về tình hình kẹt xe tại Việt Nam rất khó có thể tìm thấy trong các cơ sở dữ liệu này, mình đã xài Google Image để download hình ảnh kẹt xe với từ khoá " kẹt xe Việt Nam". Như vậy, chúng ta đã có trong tay hơn 1300 hình ảnh để cho mạng lưới train, 100 hình ảnh để test.
+  
+  - Bước 2: Gắn mác hình ảnh
+  
+  Vấn đề tiếp theo là làm sao để gắn mác hơn 1400 hình ảnh tổng cộng. Với số lượng lớn như vậy, mình đã viết một chương trình Python dựa trên một forum trên mạng dùng để gắn mác các hình ảnh này. Khi ta download về, lưu ý rằng các hình ảnh kẹt xe phải nằm riêng lẻ với các hình không kẹt xe trong hai folder khác nhau. Như vậy, ta sẽ sử dụng chương trình Labeler.py có trong repository này để gắn mác từng ảnh. Với mỗi ảnh trong folder, ta sẽ gắn mác "traffic." hoặc là "road." trước tên ảnh bằng dòng code sau:
+  
+  ```
+  def get_traindata():
+    img_num=1
+    for n in os.listdir(mypath):
+        path=os.path.join(mypath,n)
+        img=cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+        cv2.imwrite('./train/'+label+str(img_num)+'.jpg',img)
+        img_num+=1
+  ```
+  
+  Với thủ tục trên, ta có label là "traffic" hoặc "road", mypath là địa chỉ folder giữ ảnh, img_num là để đếm ảnh và thêm chỉ số đếm vào tên. Như vậy, ta sẽ có:
+  
+  
   
 
   
