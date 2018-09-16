@@ -147,7 +147,52 @@ model.add(Dense(2, activation='softmax'))
   
   
   - Bước 6: Test trên các dữ liệu thực tế:
-  Sau khi xong tất cả, mình đã chọn ra các hình ảnh không có trong bộ dữ liệu để test CNN
+  Sau khi xong tất cả, mình đã chọn ra các hình ảnh không có trong bộ dữ liệu để test CNN. Ta sẽ sử dụng chương trình predict.py để thử, nếu nó là kẹt xe, chương trình sẽ xuất ra traffic, nếu không, sẽ xuất ra road. Ngoài ra, chương trình còn xuất cặp chỉ số xác suất dự đoán [x,y], tương đương ta có x là chắc chắn bao nhiêu phần trăm bức ảnh này là đường bị kẹt xe, y là bao nhiêu phần trăm chắc chắn bức ảnh này không bị kẹt xe.
+  
+  traffic1.jpg:
+  
+  ![Screenshot](traffic1.jpg)
+  
+   Kết quả:
+   
+   ![Screenshot](https://github.com/TsoiPhu/Traffic-Detection/blob/master/README%20images/traffic1result.png)
+   
+   
+   index.jpeg:
+   
+   ![Screenshot](index.jpeg)
+   
+   
+   Kết quả:
+   
+   ![Screenshot](https://github.com/TsoiPhu/Traffic-Detection/blob/master/README%20images/indexjpegresult.png)
+   
+   
+   index.jpg:
+   
+   ![Screenshot](index.jpg)
+   
+   
+   Kết quả:
+   
+   ![Screenshot](https://github.com/TsoiPhu/Traffic-Detection/blob/master/README%20images/indexresult.png)
+   
+   
+   traffic.jpg:
+   
+   ![Screenshot](traffic.jpg)
+   
+   
+   Kết quả:
+   
+   ![Screenshot](https://github.com/TsoiPhu/Traffic-Detection/blob/master/README%20images/trafficresult.png)
+   
+   
+   Như vậy, ta thấy mạng lưới CNN của chúng ta đã phân loại đúng 3 trong 4 ảnh, với ảnh thứ 2 bị phân loại sai, theo suy đoán của mình, có lẽ do mái của những chiếc xe hơi trong bức ảnh đó bị chiếu quá sáng nên ảnh bị chói, để lại phần sau con đường mặc dù bị kẹt xe nhưng lại trông rất giống một con đường trống trải.
+   
+   
+   #### Kết luận.
+   Với mục đích của mình ban đầu là xây dựng một mạng lưới CNN để nghiên cứu, học hỏi và thử nghiệm. Nhưng, do thấy sự cần thiết của việc giải quyết vấn đề kẹt xe là quá lớn nên mình quyết định thử áp dụng công nghệ này vào nhận dạng kẹt xe để đưa ra một hướng tiếp cận mới và dùng nó như sản phẩm của bài thi KHKT của mình. Sau dự án, mình thấy được rằng, mặc dù còn rất nhiều hạn chế, trí tuệ nhân tạo nói chung, CNN và công nghệ phân loại hình ảnh nói riêng, là những "thí sinh" rất có triển vọng giải quyết các vấn đề mà hiện tại ta chưa giải quyết được, chẳng hạn như kẹt xe, và nhiều mục đích khác nữa. 
   
   
   
