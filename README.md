@@ -40,7 +40,7 @@ Phần mềm phân loại hình ảnh sử dụng Keras và OpenCV trên ngôn n
   
   **Dense:**
   
-  - Là loại lớp cuối cùng trong cấu trúc CNN. Dense, như tên gọi, sẽ kết nối đặc tất cả các neuron ở lớp này với lớp tiếp theo. Làm như thế sẽ tăng sức chứa và độ chính xác của model này tăng mạnh, bởi vì có càng nhiều liên kết giữa các neuron sẽ càng có nhiều cách để miêu tả được dữ liệu nhập vào mạng lưới và đồng nghĩa bước phân loại cuối cùng sẽ chi tiết hơn. Nhưng, các cấu trúc CNN rất thường gặp trường hợp overfitting, do được nhận quá nhiều dữ liệu không liên quan trong hình ảnh có thể ảnh hưởng rất lớn đên khả năng phân loại sau này. Vì thế, chúng ta cần thêm bước Dropout, loại bỏ các liên kết ngẫu nhiên trong mạng lưới để tránh các lỗi không mong muốn.
+  - Là loại lớp cuối cùng trong cấu trúc CNN. Dense, như tên gọi, sẽ kết nối đặc tất cả các neuron ở lớp này với lớp tiếp theo. Làm như thế sẽ tăng sức chứa và độ chính xác của model này rất mạnh, bởi vì có càng nhiều liên kết giữa các neuron sẽ càng có nhiều cách để miêu tả được dữ liệu nhập vào mạng lưới và đồng nghĩa bước phân loại cuối cùng sẽ chi tiết hơn. Nhưng, các cấu trúc CNN rất thường gặp trường hợp overfitting, do được nhận quá nhiều dữ liệu không liên quan trong hình ảnh có thể ảnh hưởng rất lớn đên khả năng phân loại sau này. Vì thế, chúng ta cần thêm bước Dropout, loại bỏ các liên kết ngẫu nhiên trong mạng lưới để tránh các lỗi không mong muốn.
   
   ### Data:
   
